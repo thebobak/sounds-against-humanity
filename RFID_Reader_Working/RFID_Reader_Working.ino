@@ -26,6 +26,10 @@
 #define rxMP3      10 		// Serial Input from MP3 Player
 #define txMP3      11 		// Serial Output to MP3 Player
 
+#define GREEN_LED  6
+#define RED_LED    5
+
+
 
 /////////////////////////
 // RFID Configurations //
@@ -144,6 +148,8 @@ void setup()
 	// define pin modes
 	pinMode(enablePin, OUTPUT);
 	pinMode(rxPin, INPUT);
+        pinMode(GREEN_LED, OUTPUT);
+        pinMode(RED_LED, OUTPUT);
 
 	// Disable RFID Reader //
 	digitalWrite(enablePin, HIGH);
@@ -166,6 +172,19 @@ void setup()
 		COM1.write("+");
 	}
 	COM1.flush();
+
+        // Blink the Lights //
+        digitalWrite(GREEN_LED, HIGH);
+        delay(300);
+        digitalWrite(GREEN_LED, LOW);
+        delay(300);
+        digitalWrite(GREEN_LED, HIGH);
+        delay(300);
+        digitalWrite(GREEN_LED, LOW);
+        delay(300);
+        digitalWrite(GREEN_LED, HIGH);
+        
+
 }
 
 
@@ -202,6 +221,15 @@ String getRFID() {    // Returns a String containing the RFID of the scanned car
   	}
 
 	digitalWrite(enablePin, HIGH);  // Disable RFID reader
+        digitalWrite(GREEN_LED, LOW);
+        digitalWrite(RED_LED, HIGH);
+        delay(100);
+        digitalWrite(GREEN_LED, HIGH);
+        delay(100);
+        digitalWrite(GREEN_LED, LOW);
+        delay(100);
+        digitalWrite(GREEN_LED, HIGH);
+        digitalWrite(RED_LED, LOW);
 
 	// Copy the RFID to a String object //
 	for(int i=0; i< BUFSIZE; i++) {
@@ -229,7 +257,7 @@ String formatIndex(int index) {   // Formats the index number into a 5-digit, ze
 
 
 
-void playTrack(String scannedCard) {  // Transmits track to be played to the sound player //
+bool playTrack(String scannedCard) {  // Transmits track to be played to the sound player //
 
 	for (int i = 0; i < NUM_TRACKS; i++) {
     	if (NOW_PLAYING != scannedCard) {
@@ -243,9 +271,10 @@ void playTrack(String scannedCard) {  // Transmits track to be played to the sou
 
         		// Possible Addition:  This listens for a return from the MP3 that the track has finished
         		COM1.write("s"); //stop current track
-        		delay(200);
+        		delay(100);
         		COM1.println(formatIndex(tracks[i].index));
                         //COM1.println(scannedCard);
+                        delay(100);
       		}
       		else {
         		Serial.println("Card Not Found");
@@ -255,6 +284,8 @@ void playTrack(String scannedCard) {  // Transmits track to be played to the sou
     		Serial.println("Try again with different card");
     	}
   	}
+  
+  return true;
 } // end of playTrack Function
 
 
@@ -266,8 +297,13 @@ void playTrack(String scannedCard) {  // Transmits track to be played to the sou
 void loop() {
 
 	Serial.println("Ready to Scan\n");
-	playTrack(getRFID());
-  delay(100);
+	if(playTrack(getRFID())) {
+          delay(100);
+          }
+          else {
+            delay(1000);
+          }
+
 }
 
 
