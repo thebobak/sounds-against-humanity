@@ -5,7 +5,7 @@
 	Author:	Bobak Shafiei [http://thebobak.com]   
 	Github:	thebobak.github.com
 
-	Uses portions of the RFID program from Parallax/Joe Grand
+	Uses portion of the RFID program from Parallax/Joe Grand
 	https://www.parallax.com/downloads/rfid-arduino-example-code
 
 	Version:	1.0 [May 10, 2015]
