@@ -168,6 +168,8 @@ void loop() {
   MP3player.available();
 #endif
 
+  if(!MP3player.isPlaying()) {
+
   char inByte;
   if (COM1.available() > 0) {
     inByte = COM1.read();
@@ -265,6 +267,8 @@ void loop() {
     //reset buffer to start over
     buffer_pos = 0;
     buffer[buffer_pos] = 0; // delimit
+  }
+
   }
 
   delay(100);
