@@ -145,7 +145,7 @@ const size_t NUM_TRACKS = sizeof(tracks) / sizeof(tracks[0]);
 
 void setup()
 {
-	// define pin modes
+  	// define pin modes
 	pinMode(enablePin, OUTPUT);
 	pinMode(rxPin, INPUT);
         pinMode(GREEN_LED, OUTPUT);
@@ -183,15 +183,12 @@ void setup()
         digitalWrite(GREEN_LED, LOW);
         delay(300);
         digitalWrite(GREEN_LED, HIGH);
-        
-
 }
 
 
 ////////////////////
 // Game Functions //
 ////////////////////
-
 
 String getRFID() {    // Returns a String containing the RFID of the scanned card
 
@@ -201,9 +198,11 @@ String getRFID() {    // Returns a String containing the RFID of the scanned car
 
   	String theCard = ""; 
 
+        rfidSerial.flush();  // Flush the serial buffer to prevent double-reads
+        
   	digitalWrite(enablePin, LOW);   // enable the RFID Reader
   	while(1) {
-    	if (rfidSerial.available() > 0) { // If there are any bytes available to read, then the RFID Reader has probably seen a valid tag
+    	  if (rfidSerial.available() > 0) { // If there are any bytes available to read, then the RFID Reader has probably seen a valid tag
       		rfidData[offset] = rfidSerial.read();  // Get the byte and store it in our buffer
       		if (rfidData[offset] == RFID_START) {    // If we receive the start byte from the RFID Reader, then get ready to receive the tag's unique ID
         		offset = -1;     // Clear offset (will be incremented back to 0 at the end of the loop)
@@ -217,24 +216,19 @@ String getRFID() {    // Returns a String containing the RFID of the scanned car
       		if (offset >= BUFSIZE) {
       			offset = 0;
       		} // If the incoming data string is longer than our buffer, wrap around to avoid going out-of-bounds
-    	}
+    	  }
   	}
 
 	digitalWrite(enablePin, HIGH);  // Disable RFID reader
-        digitalWrite(GREEN_LED, LOW);
-        digitalWrite(RED_LED, HIGH);
-        delay(100);
-        digitalWrite(GREEN_LED, HIGH);
-        delay(100);
-        digitalWrite(GREEN_LED, LOW);
-        delay(100);
-        digitalWrite(GREEN_LED, HIGH);
-        digitalWrite(RED_LED, LOW);
 
 	// Copy the RFID to a String object //
 	for(int i=0; i< BUFSIZE; i++) {
     	theCard += rfidData[i];
   	}
+  
+        Serial.println("Scanning Finished");
+
+  
 	return theCard;
 
 } // end of getRFID Function
@@ -258,9 +252,10 @@ String formatIndex(int index) {   // Formats the index number into a 5-digit, ze
 
 
 bool playTrack(String scannedCard) {  // Transmits track to be played to the sound player //
-
+        bool foundRFID = false;
 	for (int i = 0; i < NUM_TRACKS; i++) {
-    	if (NOW_PLAYING != scannedCard) {
+
+    	  if (NOW_PLAYING != scannedCard) {
     		if (scannedCard == tracks[i].code) {
         		NOW_PLAYING = tracks[i].code;
         		Serial.print("Found Card ID:  ");
@@ -268,24 +263,26 @@ bool playTrack(String scannedCard) {  // Transmits track to be played to the sou
         		Serial.print("Playing Track:  ");
         		//Serial.println(tracks[i].title);
                         Serial.println(formatIndex(tracks[i].index));
-
+                        Serial.println(NOW_PLAYING);
         		// Possible Addition:  This listens for a return from the MP3 that the track has finished
-        		COM1.write("s"); //stop current track
-        		delay(100);
+        		//COM1.write("s"); //stop current track
+        		//delay(100);
         		COM1.println(formatIndex(tracks[i].index));
                         //COM1.println(scannedCard);
-                        delay(100);
+                        //delay(100);
+                        foundRFID = true;
+                        break;
       		}
       		else {
-        		Serial.println("Card Not Found");
+        		//Serial.println("Card Not Found");
       		}
-    	}
-    	else {
+    	  }
+    	  else {
     		Serial.println("Try again with different card");
-    	}
+    	  }
   	}
   
-  return true;
+  return foundRFID;
 } // end of playTrack Function
 
 
@@ -297,12 +294,23 @@ bool playTrack(String scannedCard) {  // Transmits track to be played to the sou
 void loop() {
 
 	Serial.println("Ready to Scan\n");
+
 	if(playTrack(getRFID())) {
+          // blink the lights
+          digitalWrite(GREEN_LED, LOW);
+          digitalWrite(RED_LED, HIGH);
           delay(100);
-          }
-          else {
-            delay(1000);
-          }
+          digitalWrite(GREEN_LED, HIGH);
+          delay(100);
+          digitalWrite(GREEN_LED, LOW);
+          delay(100);
+          digitalWrite(GREEN_LED, HIGH);
+          digitalWrite(RED_LED, LOW);
+          delay(2000);        
+        }
+        else {
+          delay(100);
+        }
 
 }
 
