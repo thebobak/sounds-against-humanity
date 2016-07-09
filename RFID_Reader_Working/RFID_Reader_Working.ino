@@ -8,7 +8,7 @@
 	Uses portion of the RFID program from Parallax/Joe Grand
 	https://www.parallax.com/downloads/rfid-arduino-example-code
 
-	Version:	1.0 [May 10, 2015]
+	Version:	2.0 [July 7, 2016]
 
   
 */
@@ -131,8 +131,36 @@ Track tracks[]  = {
   {49, "20004041DB"},
   {50, "2000404180"},
   {51, "4F0040CB91"},
-  {52, "4F004223C5"}
-
+  {52, "4F004223C5"},
+  {53, "1100103388"},
+  {54, "110017B873"},
+  {55, "110017D633"},
+{56, "110017DB84"},
+{57, "11001797B3"},
+{58, "110010695A"},
+{59, "1100106E4C"},
+{60, "1100107325"},
+{61, "110017D0D1"},
+{62, "110017588F"},
+{63, "1100175FBC"},
+{64, "110017FA8D"},
+{65, "1100180044"},
+{66, "110017AE90"},
+{67, "110017B59A"},
+{68, "110017E425"},
+{69, "110017DDA4"},
+{70, "110017D6FF"},
+{71, "1100176CAF"},
+{72, "1100172923"},
+{73, "110013401C"},
+{74, "1100133EF8"},
+{75, "1100131B8B"},
+{76, "1100131C33"},
+{77, "11001322DE"},
+{78, "1100132700"},
+{79, "11001327E3"},
+{80, "1100131F9D"},
+{81, "1100103A3C"}
 };
 
 
@@ -228,8 +256,9 @@ String getRFID() {    // Returns a String containing the RFID of the scanned car
   
         Serial.println("Scanning Finished");
 
-  
+        Serial.println(theCard); // Print out the RFID of the card...useful for adding new cards! //
 	return theCard;
+        
 
 } // end of getRFID Function
 
